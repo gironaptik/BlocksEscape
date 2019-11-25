@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">BlocksEscape</string>
+    <string name="blocks_escape">Blocks Escape</string>
+    <string name="lives">Lives:</string>
+</resources>
