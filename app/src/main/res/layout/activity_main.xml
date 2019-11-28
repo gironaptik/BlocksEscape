@@ -40,9 +40,10 @@
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
-        <View
+        <ImageView
             android:id="@+id/v_left"
             android:layout_width="130dp"
             android:layout_height="40dp"
@@ -50,7 +51,7 @@
             android:layout_weight="1"
             android:background="@color/colorPrimary" />
 
-        <View
+        <ImageView
             android:id="@+id/v_middle"
             android:layout_width="130dp"
             android:layout_height="40dp"
@@ -58,7 +59,7 @@
             android:layout_weight="1"
             android:background="@color/colorAccent" />
 
-        <View
+        <ImageView
             android:id="@+id/v_right"
             android:layout_width="130dp"
             android:layout_height="40dp"
@@ -68,39 +69,64 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_weight="1"
             android:orientation="vertical">
 
-            <View
+            <ImageView
                 android:id="@+id/v_playerLeft"
                 android:layout_width="130dp"
-                android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
-                android:layout_weight="0.5"
-                android:background="@color/colorPrimary" />
+                android:layout_height="80dp"
+                android:src="@mipmap/player"
+                android:layout_marginBottom="2dp"
+                android:visibility="invisible"
+                 />
 
-            <View
+            <ImageView
                 android:id="@+id/v_playerCenter"
                 android:layout_width="130dp"
-                android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
-                android:layout_weight="0.5"
-                android:background="@color/colorPrimary" />
+                android:layout_height="80dp"
+                android:src="@mipmap/player"
+                android:layout_marginBottom="2dp"/>
 
-            <View
+            <ImageView
                 android:id="@+id/v_playerRight"
                 android:layout_width="130dp"
-                android:layout_height="40dp"
+                android:layout_height="80dp"
                 android:layout_alignParentRight="true"
-                android:layout_weight="0.5"
-                android:background="@color/colorPrimary" />
+                android:src="@mipmap/player"
+                android:visibility="invisible"
+                android:layout_marginBottom="2dp"/>
 
 
         </RelativeLayout>
 
     </FrameLayout>
 
+    <RelativeLayout
+        android:id="@+id/buttonsLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/leftArrow"
+            android:layout_alignParentLeft="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="4dp"
+            android:background="@mipmap/left"/>
+
+        <Button
+            android:id="@+id/rightArrow"
+            android:layout_alignParentRight="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="4dp"
+            android:background="@mipmap/right"/>
+
+    </RelativeLayout>
 </LinearLayout>
 
