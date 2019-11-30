@@ -2,14 +2,24 @@ package com.afeka.blocksescape;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.media.Image;
+import android.opengl.Visibility;
+import android.util.Log;
+import android.view.animation.AnimationUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.animation.ObjectAnimator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import java.util.Random;
+import android.view.animation.LinearInterpolator;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
+import java.lang.Math;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,36 +29,43 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        blocksDropping((ImageView)findViewById(R.id.v_left));
-        blocksDropping((ImageView)findViewById(R.id.v_middle));
-        blocksDropping((ImageView)findViewById(R.id.v_right));
+
+//        blocksDropping((ImageView)findViewById(R.id.v_left));
+//        blocksDropping((ImageView)findViewById(R.id.v_left2));
+//        blocksDropping((ImageView)findViewById(R.id.v_middle));
+//        blocksDropping((ImageView)findViewById(R.id.v_middle2));
+//        blocksDropping((ImageView)findViewById(R.id.v_right));
+//        blocksDropping((ImageView)findViewById(R.id.v_right2));
+        //final ImageView[] lives = {findViewById(R.id.live1), findViewById(R.id.live2), findViewById(R.id.live3)};
+        final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
+        dropping(playerLocation);
+//        ViewGroup player = null;
+
         findViewById(R.id.leftArrow).setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controlPlayer(-1);
+                controlPlayer(-1, playerLocation);
             }
         });
 
         findViewById(R.id.rightArrow).setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controlPlayer(1);
+                controlPlayer(1, playerLocation);
             }
         });
     }
 
-    private void controlPlayer(final int direction) {
+    private void controlPlayer(final int direction, final ImageView[] playerLocation) {
         // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
         final Handler handler = new Handler();
-
         new Thread(new Runnable() {
             @Override
             public void run() {
-                    final ImageView[] playerLocation = {findViewById(R.id.v_playerLeft), findViewById(R.id.v_playerCenter), findViewById(R.id.v_playerRight)};
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            for(int i=0; i<=2; i++){
+                            for(int i=0; i<playerLocation.length; i++){
                                 if( (i+direction >= 0  && i+direction <= 2) && playerLocation[i].getVisibility() == View.VISIBLE){
                                     playerLocation[i].setVisibility(View.INVISIBLE);
                                     playerLocation[i+direction].setVisibility(View.VISIBLE);
@@ -61,39 +78,54 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-//    @Override
-//    public void onClick(final View view) {
-//        FrameLayout frame = findViewById(R.id.frameLayout);
-//        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", frame.getHeight());
-//        animation.setDuration(4000);
-//        animation.addListener(new Animator.AnimatorListener() {
-//
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//                view.setVisibility(View.VISIBLE);
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                Random r = new Random();
-//                double delay = 1000 * (0.1 + (2 - 0.1) * r.nextDouble());
-//                animation.setStartDelay((int) delay);
-//                animation.start();
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation) {
-//            }
-//        });
-//        animation.start();
-//
-//    }
+    private void checkLife() {
+        // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
+        final ImageView[] lives = {findViewById(R.id.live1), findViewById(R.id.live2), findViewById(R.id.live3)};
+        final Handler handler = new Handler();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int i;
+                        for(i=lives.length-1; i>=0; i--){
+                            if( (lives[i].getVisibility() == View.VISIBLE)){
+                                lives[i].setVisibility(View.INVISIBLE);
+                                break;
+                            }
+                        }
+                        if(i == 0){
+                            ObjectAnimator animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
+                            view.startAnimation(animShake);
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Oh No!!!")
+                                    .setMessage("")
+                                    .setCancelable(false).show();
+//                                    .setPositiveButton("ok", new OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which) {
+//                                            // Whatever...
+//                                        }
+//                                    }).show();
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
 
-    private void blocksDropping(final ImageView view) {
+    private void dropping(final ImageView[] playerLocation){
+        blocksDropping((ImageView)findViewById(R.id.v_left), playerLocation);
+        blocksDropping((ImageView)findViewById(R.id.v_left2), playerLocation);
+        blocksDropping((ImageView)findViewById(R.id.v_center), playerLocation);
+        blocksDropping((ImageView)findViewById(R.id.v_center2), playerLocation);
+        blocksDropping((ImageView)findViewById(R.id.v_right), playerLocation);
+        blocksDropping((ImageView)findViewById(R.id.v_right2), playerLocation);
+    }
+
+    private void blocksDropping(final ImageView view, final ImageView[] playerLocation) {
+
         // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
         final Handler handler = new Handler();
         new Thread(new Runnable() {
@@ -102,12 +134,34 @@ public class MainActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        FrameLayout frame = findViewById(R.id.frameLayout);
-                        ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", frame.getHeight());
-                        animation.setDuration(4000);
-                        Random r = new Random();
-                        double delay = 1000 * (0.1 + (3 - 0.5) * r.nextDouble());
-                        animation.setStartDelay((int)delay);
+                        final FrameLayout frame = findViewById(R.id.frameLayout);
+                        final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
+                        final RelativeLayout playerL = findViewById(R.id.playerLayout);
+                        final TextView score = findViewById(R.id.textResults);
+                        final ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", frame.getHeight());
+                        animation.setInterpolator(new LinearInterpolator());
+                        animation.setDuration(6000);
+                        int delay = 1000*(int)(Math.random() * ((6 - 2) + 2)) + 1;
+                        animation.setStartDelay(delay);
+                        animation.addUpdateListener(new AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                float imageYPosition = (Float)animation.getAnimatedValue();
+                                if(Math.abs(imageYPosition - playerL.getTop()) < 3) {
+                                    for (int i = 0; i < playerLocation.length; i++)
+                                        if (playerLocation[i].getVisibility() == View.VISIBLE && Math.abs(view.getX() - playerLocation[i].getX()) < 20) {
+                                            checkLife();
+                                        }
+                                }
+                                //}
+
+                                //Updating Score
+                                if(imageYPosition == frame.getHeight()){
+                                    score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
+                                }
+                            }
+                        });
+
                         animation.addListener(new Animator.AnimatorListener() {
 
                             @Override
@@ -117,9 +171,10 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onAnimationEnd(Animator animation) {
-                                Random r = new Random();
-                                double delay = 1000 * (0.1 + (2 - 0.1) * r.nextDouble());
-                                animation.setStartDelay((int) delay);
+//                                Random r = new Random();
+//                                double delay = 1000 * (0.1 + (2 - 0.1) * r.nextDouble());
+                                int delay = 1000*(int)(Math.random() * ((6 - 2) + 2)) + 1;
+                                animation.setStartDelay(delay);
                                 animation.start();
                             }
 
@@ -137,6 +192,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+
+
 }
 
 

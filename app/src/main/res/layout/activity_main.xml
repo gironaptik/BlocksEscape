@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/wallpaper"
     android:orientation="vertical"
     android:visibility="visible"
-    android:background="@drawable/wallpaper"
     tools:context=".MainActivity">
 
     <RelativeLayout
@@ -28,12 +28,43 @@
             android:layout_centerHorizontal="true"
             android:text="@string/lives" />
 
+        <ImageView
+            android:id="@+id/live1"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:layout_toEndOf="@id/textView"
+            android:src="@mipmap/live" />
+
+        <ImageView
+            android:id="@+id/live2"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:layout_toEndOf="@id/live1"
+            android:src="@mipmap/live" />
+
+        <ImageView
+            android:id="@+id/live3"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:layout_toEndOf="@id/live2"
+            android:src="@mipmap/live" />
+
+        <TextView
+            android:id="@+id/textScore"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_toStartOf="@id/textResults"
+            android:text="Score:  " />
+
         <TextView
             android:id="@+id/textResults"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_alignParentRight="true"
-            android:text="Score:  " />
+            android:text="0" />
 
     </RelativeLayout>
 
@@ -49,15 +80,35 @@
             android:layout_height="40dp"
             android:layout_gravity="top|left"
             android:layout_weight="1"
-            android:background="@color/colorPrimary" />
+            android:background="@color/colorPrimary"
+            android:visibility="invisible" />
 
         <ImageView
-            android:id="@+id/v_middle"
+            android:id="@+id/v_left2"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|left"
+            android:layout_weight="1"
+            android:background="@color/design_default_color_primary"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/v_center"
             android:layout_width="130dp"
             android:layout_height="40dp"
             android:layout_gravity="top|center"
             android:layout_weight="1"
-            android:background="@color/colorAccent" />
+            android:background="@color/colorAccent"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/v_center2"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|center"
+            android:layout_weight="1"
+            android:background="@color/design_default_color_primary"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/v_right"
@@ -65,40 +116,51 @@
             android:layout_height="40dp"
             android:layout_gravity="top|right"
             android:layout_weight="1"
-            android:background="@color/colorPrimary" />
+            android:background="@color/colorPrimary"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/v_right2"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|right"
+            android:layout_weight="1"
+            android:background="@color/design_default_color_primary"
+            android:visibility="invisible" />
 
         <RelativeLayout
+            android:id="@+id/playerLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/v_playerLeft"
+                android:id="@+id/player_left"
                 android:layout_width="130dp"
+                android:layout_height="80dp"
                 android:layout_alignParentLeft="true"
-                android:layout_height="80dp"
-                android:src="@mipmap/player"
                 android:layout_marginBottom="2dp"
-                android:visibility="invisible"
-                 />
-
-            <ImageView
-                android:id="@+id/v_playerCenter"
-                android:layout_width="130dp"
-                android:layout_centerHorizontal="true"
-                android:layout_height="80dp"
                 android:src="@mipmap/player"
-                android:layout_marginBottom="2dp"/>
+                android:visibility="invisible" />
 
             <ImageView
-                android:id="@+id/v_playerRight"
+                android:id="@+id/player_center"
+                android:layout_width="130dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="2dp"
+                android:visibility="visible"
+                android:src="@mipmap/player" />
+
+            <ImageView
+                android:id="@+id/player_right"
                 android:layout_width="130dp"
                 android:layout_height="80dp"
                 android:layout_alignParentRight="true"
+                android:layout_marginBottom="2dp"
                 android:src="@mipmap/player"
-                android:visibility="invisible"
-                android:layout_marginBottom="2dp"/>
+                android:visibility="invisible" />
 
 
         </RelativeLayout>
@@ -113,19 +175,19 @@
 
         <Button
             android:id="@+id/leftArrow"
-            android:layout_alignParentLeft="true"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
             android:layout_margin="4dp"
-            android:background="@mipmap/left"/>
+            android:background="@mipmap/left" />
 
         <Button
             android:id="@+id/rightArrow"
-            android:layout_alignParentRight="true"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_alignParentRight="true"
             android:layout_margin="4dp"
-            android:background="@mipmap/right"/>
+            android:background="@mipmap/right" />
 
     </RelativeLayout>
 </LinearLayout>
