@@ -1,13 +1,10 @@
-package com.afeka.blocksescape;
+package com.afeka.blocksEscape;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.media.Image;
-import android.opengl.Visibility;
-import android.util.Log;
+import android.content.DialogInterface;
 import android.view.animation.AnimationUtils;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +17,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import java.lang.Math;
+import android.view.animation.Animation;
+import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,14 +30,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        blocksDropping((ImageView)findViewById(R.id.v_left));
-//        blocksDropping((ImageView)findViewById(R.id.v_left2));
-//        blocksDropping((ImageView)findViewById(R.id.v_middle));
-//        blocksDropping((ImageView)findViewById(R.id.v_middle2));
-//        blocksDropping((ImageView)findViewById(R.id.v_right));
-//        blocksDropping((ImageView)findViewById(R.id.v_right2));
-        //final ImageView[] lives = {findViewById(R.id.live1), findViewById(R.id.live2), findViewById(R.id.live3)};
         final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
         dropping(playerLocation);
 //        ViewGroup player = null;
@@ -78,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void checkLife() {
+    private void checkLife(final FrameLayout frame) {
         // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
         final ImageView[] lives = {findViewById(R.id.live1), findViewById(R.id.live2), findViewById(R.id.live3)};
         final Handler handler = new Handler();
@@ -96,18 +89,24 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         if(i == 0){
-                            ObjectAnimator animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-                            view.startAnimation(animShake);
-                            new AlertDialog.Builder(MainActivity.this)
-                                    .setTitle("Oh No!!!")
-                                    .setMessage("")
-                                    .setCancelable(false).show();
-//                                    .setPositiveButton("ok", new OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialog, int which) {
-//                                            // Whatever...
-//                                        }
-//                                    }).show();
+                            Animation animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
+                            frame.startAnimation(animShake);
+                            TextView score = findViewById(R.id.textResults);
+                            AlertDialog window = new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Game Over")
+                                    .setMessage("Your Score is: " + score.getText())
+                                    .setView(R.layout.gameover)
+                                    .setCancelable(false)
+                                    .setPositiveButton("Let's Try again", new DialogInterface.OnClickListener(){
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent intent = getIntent();
+                                            finish();
+                                            startActivity(intent);
+                                        }
+                                    }).show();
+                            window.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
                         }
                     }
                 });
@@ -150,7 +149,8 @@ public class MainActivity extends AppCompatActivity {
                                 if(Math.abs(imageYPosition - playerL.getTop()) < 3) {
                                     for (int i = 0; i < playerLocation.length; i++)
                                         if (playerLocation[i].getVisibility() == View.VISIBLE && Math.abs(view.getX() - playerLocation[i].getX()) < 20) {
-                                            checkLife();
+                                            view.setVisibility(View.INVISIBLE);
+                                            checkLife(frame);
                                         }
                                 }
                                 //}
@@ -192,8 +192,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
-
-
 
 }
 

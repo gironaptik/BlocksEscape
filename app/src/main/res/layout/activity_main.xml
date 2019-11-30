@@ -79,8 +79,8 @@
             android:layout_width="130dp"
             android:layout_height="40dp"
             android:layout_gravity="top|left"
+            android:src="@mipmap/brick1"
             android:layout_weight="1"
-            android:background="@color/colorPrimary"
             android:visibility="invisible" />
 
         <ImageView
@@ -89,7 +89,7 @@
             android:layout_height="40dp"
             android:layout_gravity="top|left"
             android:layout_weight="1"
-            android:background="@color/design_default_color_primary"
+            android:src="@mipmap/brick2"
             android:visibility="invisible" />
 
         <ImageView
@@ -98,7 +98,7 @@
             android:layout_height="40dp"
             android:layout_gravity="top|center"
             android:layout_weight="1"
-            android:background="@color/colorAccent"
+            android:src="@mipmap/brick3"
             android:visibility="invisible" />
 
         <ImageView
@@ -106,8 +106,8 @@
             android:layout_width="130dp"
             android:layout_height="40dp"
             android:layout_gravity="top|center"
+            android:src="@mipmap/brick4"
             android:layout_weight="1"
-            android:background="@color/design_default_color_primary"
             android:visibility="invisible" />
 
         <ImageView
@@ -115,8 +115,8 @@
             android:layout_width="130dp"
             android:layout_height="40dp"
             android:layout_gravity="top|right"
+            android:src="@mipmap/brick5"
             android:layout_weight="1"
-            android:background="@color/colorPrimary"
             android:visibility="invisible" />
 
         <ImageView
@@ -124,8 +124,8 @@
             android:layout_width="130dp"
             android:layout_height="40dp"
             android:layout_gravity="top|right"
+            android:src="@mipmap/brick6"
             android:layout_weight="1"
-            android:background="@color/design_default_color_primary"
             android:visibility="invisible" />
 
         <RelativeLayout

@@ -1,4 +1,4 @@
-package com.afeka.blocksescape;
+package com.afeka.blocksEscape;
 
 import android.content.Context;
 
