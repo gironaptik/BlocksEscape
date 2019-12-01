@@ -33,12 +33,30 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
         dropping(playerLocation);
-//        ViewGroup player = null;
+        movePressed(playerLocation);
+
+    }
+
+    private void movePressed(final ImageView[] playerLocation){
+
+        findViewById(R.id.buttonLeft).setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controlPlayer(-1, playerLocation);
+            }
+        });
 
         findViewById(R.id.leftArrow).setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
                 controlPlayer(-1, playerLocation);
+            }
+        });
+
+        findViewById(R.id.buttonRight).setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controlPlayer(1, playerLocation);
             }
         });
 
@@ -49,9 +67,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     private void controlPlayer(final int direction, final ImageView[] playerLocation) {
-        // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
         final Handler handler = new Handler();
         new Thread(new Runnable() {
             @Override
