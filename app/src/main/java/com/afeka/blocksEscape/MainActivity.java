@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                             AlertDialog window = new AlertDialog.Builder(MainActivity.this)
                                     .setTitle("Game Over")
                                     .setMessage("Your Score is: " + score.getText())
-                                    //.setView(R.layout.gameover)
+                                    .setView(R.layout.gameover)
                                     .setCancelable(false)
                                     .setPositiveButton("Let's Try again", new DialogInterface.OnClickListener(){
                                         @Override
