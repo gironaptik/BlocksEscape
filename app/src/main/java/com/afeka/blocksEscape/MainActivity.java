@@ -20,6 +20,7 @@ import java.lang.Math;
 import android.view.animation.Animation;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,19 +56,19 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            for(int i=0; i<playerLocation.length; i++){
-                                if( (i+direction >= 0  && i+direction <= 2) && playerLocation[i].getVisibility() == View.VISIBLE){
-                                    playerLocation[i].setVisibility(View.INVISIBLE);
-                                    playerLocation[i+direction].setVisibility(View.VISIBLE);
-                                    break;
-                                }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for(int i=0; i<playerLocation.length; i++){
+                            if( (i+direction >= 0  && i+direction <= 2) && playerLocation[i].getVisibility() == View.VISIBLE){
+                                playerLocation[i].setVisibility(View.INVISIBLE);
+                                playerLocation[i+direction].setVisibility(View.VISIBLE);
+                                break;
                             }
                         }
-                    });
-                }
+                    }
+                });
+            }
         }).start();
     }
 
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                             AlertDialog window = new AlertDialog.Builder(MainActivity.this)
                                     .setTitle("Game Over")
                                     .setMessage("Your Score is: " + score.getText())
-                                    .setView(R.layout.gameover)
+                                    //.setView(R.layout.gameover)
                                     .setCancelable(false)
                                     .setPositiveButton("Let's Try again", new DialogInterface.OnClickListener(){
                                         @Override
@@ -115,17 +116,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void dropping(final ImageView[] playerLocation){
-        blocksDropping((ImageView)findViewById(R.id.v_left), playerLocation);
-        blocksDropping((ImageView)findViewById(R.id.v_left2), playerLocation);
-        blocksDropping((ImageView)findViewById(R.id.v_center), playerLocation);
-        blocksDropping((ImageView)findViewById(R.id.v_center2), playerLocation);
-        blocksDropping((ImageView)findViewById(R.id.v_right), playerLocation);
-        blocksDropping((ImageView)findViewById(R.id.v_right2), playerLocation);
+        final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_left2), findViewById(R.id.v_center), findViewById(R.id.v_center2), findViewById(R.id.v_right), findViewById(R.id.v_right2)};
+        //final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_center), findViewById(R.id.v_right)};
+        for(int i=0; i<bricks.length; i++){
+
+            blocksDropping(bricks[i], playerLocation);
+        }
+
     }
 
     private void blocksDropping(final ImageView view, final ImageView[] playerLocation) {
-
-        // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
         final Handler handler = new Handler();
         new Thread(new Runnable() {
             @Override
@@ -134,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         final FrameLayout frame = findViewById(R.id.frameLayout);
-                        final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
+                        //final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
                         final RelativeLayout playerL = findViewById(R.id.playerLayout);
                         final TextView score = findViewById(R.id.textResults);
                         final ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", frame.getHeight());
                         animation.setInterpolator(new LinearInterpolator());
                         animation.setDuration(6000);
-                        int delay = 1000*(int)(Math.random() * ((6 - 2) + 2)) + 1;
+                        int delay = 1000*(int)((new Random().nextInt(15))+1);
                         animation.setStartDelay(delay);
                         animation.addUpdateListener(new AnimatorUpdateListener() {
                             @Override
@@ -173,8 +173,8 @@ public class MainActivity extends AppCompatActivity {
                             public void onAnimationEnd(Animator animation) {
 //                                Random r = new Random();
 //                                double delay = 1000 * (0.1 + (2 - 0.1) * r.nextDouble());
-                                int delay = 1000*(int)(Math.random() * ((6 - 2) + 2)) + 1;
-                                animation.setStartDelay(delay);
+//                                int delay = 1000*(int)((new Random().nextInt(6))+1);
+//                                animation.setStartDelay(delay);
                                 animation.start();
                             }
 
@@ -194,7 +194,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-
-
-
-
