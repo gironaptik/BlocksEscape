@@ -5,11 +5,13 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.view.LayoutInflater;
 import android.view.animation.AnimationUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.animation.ObjectAnimator;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.view.animation.LinearInterpolator;
@@ -20,11 +22,15 @@ import java.lang.Math;
 import android.view.animation.Animation;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+
+import org.w3c.dom.Text;
+
 import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static int REQUEST_CODE_1 = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
         final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
         dropping(playerLocation);
         movePressed(playerLocation);
-
     }
 
+    //Move buttons (4 buttons)
     private void movePressed(final ImageView[] playerLocation){
 
         findViewById(R.id.buttonLeft).setOnClickListener(new ImageView.OnClickListener() {
@@ -66,7 +72,11 @@ public class MainActivity extends AppCompatActivity {
                 controlPlayer(1, playerLocation);
             }
         });
+
+
     }
+
+    //Control player location
     private void controlPlayer(final int direction, final ImageView[] playerLocation) {
         final Handler handler = new Handler();
         new Thread(new Runnable() {
@@ -88,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    //Check life and game over
     private void checkLife(final FrameLayout frame) {
         // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
         final ImageView[] lives = {findViewById(R.id.live1), findViewById(R.id.live2), findViewById(R.id.live3)};
@@ -106,24 +117,29 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         if(i == 0){
+
+                            TextView currentScore = findViewById(R.id.textResults);
+                            Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
+                            intent.putExtra("score", currentScore.getText());
+                            startActivityForResult(intent, REQUEST_CODE_1);
+
+                            LayoutInflater inflater = getLayoutInflater();
+                            View myView = inflater.inflate(R.layout.activity_gamover, null);
+                            final Button button = myView.findViewById(R.id.HomePage);
+                            button.setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    // Perform action on click
+                                    Intent activityChangeIntent = new Intent(MainActivity.this, WelcomeActivity.class);
+                                    MainActivity.this.startActivity(activityChangeIntent);
+                                }
+                            });
+
+                            TextView score = myView.findViewById(R.id.score);
+                            score.setText(currentScore.getText().toString());
                             Animation animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
                             frame.startAnimation(animShake);
-                            TextView score = findViewById(R.id.textResults);
-                            AlertDialog window = new AlertDialog.Builder(MainActivity.this)
-                                    .setTitle("Game Over")
-                                    .setMessage("Your Score is: " + score.getText())
-                                    .setView(R.layout.gameover)
-                                    .setCancelable(false)
-                                    .setPositiveButton("Let's Try again", new DialogInterface.OnClickListener(){
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Intent intent = getIntent();
-                                            finish();
-                                            startActivity(intent);
-                                        }
-                                    }).show();
-                            window.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
+                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                            alertDialogBuilder.show();
                         }
                     }
                 });
@@ -131,17 +147,22 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    //Create each brick with its own thread
     private void dropping(final ImageView[] playerLocation){
-        final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_left2), findViewById(R.id.v_center), findViewById(R.id.v_center2), findViewById(R.id.v_right), findViewById(R.id.v_right2)};
+        final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_center), findViewById(R.id.v_right), findViewById(R.id.v_left2), findViewById(R.id.v_center2), findViewById(R.id.v_right2)};
+        //If we want only 3 items
         //final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_center), findViewById(R.id.v_right)};
         for(int i=0; i<bricks.length; i++){
-
-            blocksDropping(bricks[i], playerLocation);
+            if(i%2 == 0)
+                blocksDropping(bricks[i], playerLocation, 0);
+            else
+                blocksDropping(bricks[i], playerLocation, 1);
         }
 
     }
 
-    private void blocksDropping(final ImageView view, final ImageView[] playerLocation) {
+    //Brick Drop animation and hit calculation
+    private void blocksDropping(final ImageView view, final ImageView[] playerLocation, final int delayIndex) {
         final Handler handler = new Handler();
         new Thread(new Runnable() {
             @Override
@@ -150,14 +171,20 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         final FrameLayout frame = findViewById(R.id.frameLayout);
-                        //final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
                         final RelativeLayout playerL = findViewById(R.id.playerLayout);
                         final TextView score = findViewById(R.id.textResults);
                         final ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", frame.getHeight());
                         animation.setInterpolator(new LinearInterpolator());
-                        animation.setDuration(6000);
-                        int delay = 1000*(int)((new Random().nextInt(15))+1);
-                        animation.setStartDelay(delay);
+                        animation.setDuration(7000);
+                        if (delayIndex == 0) {
+                            int delay = 1000 * (int) ((new Random().nextInt(6)) + 1);
+                            animation.setStartDelay(delay);
+                        }
+                        else {
+                            int delay = 1000 * (int) (new Random().nextInt((8 - 5) + 1) + 5);
+                            animation.setStartDelay(delay);
+                        }
+                        //animation.setStartDelay(delay);
                         animation.addUpdateListener(new AnimatorUpdateListener() {
                             @Override
                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -187,10 +214,14 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onAnimationEnd(Animator animation) {
-//                                Random r = new Random();
-//                                double delay = 1000 * (0.1 + (2 - 0.1) * r.nextDouble());
-//                                int delay = 1000*(int)((new Random().nextInt(6))+1);
-//                                animation.setStartDelay(delay);
+                                if (delayIndex == 1) {
+                                    int delay = 1000 * (int) ((new Random().nextInt(9)) + 1);
+                                    animation.setStartDelay(delay);
+                                }
+                                else {
+                                    int delay = 1000 * (int) (new Random().nextInt((15 - 9) + 1) + 9);
+                                    animation.setStartDelay(delay);
+                                }
                                 animation.start();
                             }
 

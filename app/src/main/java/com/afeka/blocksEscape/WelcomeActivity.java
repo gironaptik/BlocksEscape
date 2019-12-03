@@ -22,9 +22,6 @@ public class WelcomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 Intent activityChangeIntent = new Intent(WelcomeActivity.this, MainActivity.class);
-
-                // currentContext.startActivity(activityChangeIntent);
-
                 WelcomeActivity.this.startActivity(activityChangeIntent);
             }
         });
