@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.animation.AnimationUtils;
 import android.os.Bundle;
@@ -21,16 +21,14 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import java.lang.Math;
 import android.view.animation.Animation;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-
-import org.w3c.dom.Text;
-
 import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_1 = 1;
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static int lastDelay = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,14 +175,17 @@ public class MainActivity extends AppCompatActivity {
                         animation.setInterpolator(new LinearInterpolator());
                         animation.setDuration(7000);
                         if (delayIndex == 0) {
-                            int delay = 1000 * (int) ((new Random().nextInt(6)) + 1);
+                            int delay = 1000 * ((new Random().nextInt(6)) + 1);
+                            lastDelay = delay;
+                            Log.d(TAG, String.valueOf(delay));
                             animation.setStartDelay(delay);
                         }
                         else {
-                            int delay = 1000 * (int) (new Random().nextInt((8 - 5) + 1) + 5);
+                            int delay = 1000 * (new Random().nextInt((8 - 5) + 1) + 5);
+                            Log.d(TAG, String.valueOf(delay));
+                            lastDelay = delay;
                             animation.setStartDelay(delay);
                         }
-                        //animation.setStartDelay(delay);
                         animation.addUpdateListener(new AnimatorUpdateListener() {
                             @Override
                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -215,12 +216,18 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 if (delayIndex == 1) {
-                                    int delay = 1000 * (int) ((new Random().nextInt(9)) + 1);
-                                    animation.setStartDelay(delay);
+                                    int delay = 1000 * (int) (new Random().nextInt((15 - 1) + 1) + 1);
+                                    while(lastDelay == delay)
+                                        delay = 1000 * (int) (new Random().nextInt((15 - 1) + 1) + 1);
+                                    animation.setStartDelay(1000+ delay);
+                                    lastDelay = delay;
                                 }
                                 else {
-                                    int delay = 1000 * (int) (new Random().nextInt((15 - 9) + 1) + 9);
-                                    animation.setStartDelay(delay);
+                                    int delay = 1000 * (int) (new Random().nextInt((15 - 1) + 1) + 1);
+                                    while(lastDelay == delay)
+                                        delay = 1000 * (int) (new Random().nextInt((15 - 1) + 1) + 1);
+                                    animation.setStartDelay(1000 + delay);
+                                    lastDelay = delay;
                                 }
                                 animation.start();
                             }
