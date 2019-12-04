@@ -26,7 +26,6 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_1 = 1;
-    private static final String TAG = MainActivity.class.getSimpleName();
     private static int lastDelay = 0;
 
     @Override
@@ -113,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             }
                         }
+                        //GameOver
                         if(i == 0){
-
                             TextView currentScore = findViewById(R.id.textResults);
                             Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
                             intent.putExtra("score", currentScore.getText());
@@ -213,16 +212,16 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 if (delayIndex == 1) {
-                                    int delay = 1000 * (int) (new Random().nextInt((15 - 1) + 1) + 1);
+                                    int delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
                                     while(lastDelay == delay)
-                                        delay = 1000 * (int) (new Random().nextInt((15 - 1) + 1) + 1);
+                                        delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
                                     animation.setStartDelay(1000+ delay);
                                     lastDelay = delay;
                                 }
                                 else {
-                                    int delay = 1000 * (int) (new Random().nextInt((15 - 1) + 1) + 1);
+                                    int delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
                                     while(lastDelay == delay)
-                                        delay = 1000 * (int) (new Random().nextInt((15 - 1) + 1) + 1);
+                                        delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
                                     animation.setStartDelay(1000 + delay);
                                     lastDelay = delay;
                                 }

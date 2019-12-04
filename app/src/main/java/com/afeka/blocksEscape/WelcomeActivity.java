@@ -17,7 +17,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        final Button button = (Button) findViewById(R.id.playButton);
+        final Button button = findViewById(R.id.playButton);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent activityChangeIntent = new Intent(WelcomeActivity.this, MainActivity.class);
