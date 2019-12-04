@@ -22,7 +22,6 @@ import android.view.animation.Animation;
 import android.content.Intent;
 import java.util.Random;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_1 = 1;
