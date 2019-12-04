@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                             animation.setStartDelay(delay);
                         }
                         else {
-                            int delay = 1000 * (new Random().nextInt((8 - 5) + 1) + 5);
+                            int delay = 1000 * (new Random().nextInt((14 - 5) + 1) + 5);
                             lastDelay = delay;
                             animation.setStartDelay(delay);
                         }
