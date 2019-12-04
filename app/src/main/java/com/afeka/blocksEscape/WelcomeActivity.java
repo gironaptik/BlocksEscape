@@ -20,7 +20,6 @@ public class WelcomeActivity extends AppCompatActivity {
         final Button button = (Button) findViewById(R.id.playButton);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Perform action on click
                 Intent activityChangeIntent = new Intent(WelcomeActivity.this, MainActivity.class);
                 WelcomeActivity.this.startActivity(activityChangeIntent);
             }

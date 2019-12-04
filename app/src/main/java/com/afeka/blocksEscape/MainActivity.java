@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.animation.AnimationUtils;
 import android.os.Bundle;
@@ -177,12 +176,10 @@ public class MainActivity extends AppCompatActivity {
                         if (delayIndex == 0) {
                             int delay = 1000 * ((new Random().nextInt(6)) + 1);
                             lastDelay = delay;
-                            Log.d(TAG, String.valueOf(delay));
                             animation.setStartDelay(delay);
                         }
                         else {
                             int delay = 1000 * (new Random().nextInt((8 - 5) + 1) + 5);
-                            Log.d(TAG, String.valueOf(delay));
                             lastDelay = delay;
                             animation.setStartDelay(delay);
                         }
