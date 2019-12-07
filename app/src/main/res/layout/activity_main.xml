@@ -96,17 +96,17 @@
             android:id="@+id/v_left"
             android:layout_width="130dp"
             android:layout_height="40dp"
-            android:layout_gravity="top|left"
             android:src="@mipmap/brick1"
             android:layout_weight="1"
+
             android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/v_left2"
             android:layout_width="130dp"
             android:layout_height="40dp"
-            android:layout_gravity="top|left"
             android:layout_weight="1"
+            android:paddingTop="-40dp"
             android:src="@mipmap/brick2"
             android:visibility="invisible" />
 
@@ -125,6 +125,7 @@
             android:layout_height="40dp"
             android:layout_gravity="top|center"
             android:src="@mipmap/brick4"
+            android:paddingTop="-40dp"
             android:layout_weight="1"
             android:visibility="invisible" />
 
@@ -143,6 +144,7 @@
             android:layout_height="40dp"
             android:layout_gravity="top|right"
             android:src="@mipmap/brick6"
+            android:paddingTop="-40dp"
             android:layout_weight="1"
             android:visibility="invisible" />
 

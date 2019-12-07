@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                         final TextView score = findViewById(R.id.textResults);
                         final ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", frame.getHeight());
                         animation.setInterpolator(new LinearInterpolator());
-                        animation.setDuration(7000);
+                        animation.setDuration(4000);
                         if (delayIndex == 0) {
                             int delay = 1000 * ((new Random().nextInt(6)) + 1);
                             lastDelay = delay;
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                                 float imageYPosition = (Float)animation.getAnimatedValue();
-                                if(Math.abs(imageYPosition - playerL.getTop()) < 3) {
+                                if(Math.abs(imageYPosition - playerL.getTop()) < 5) {
                                     for (int i = 0; i < playerLocation.length; i++)
                                         if (playerLocation[i].getVisibility() == View.VISIBLE && Math.abs(view.getX() - playerLocation[i].getX()) < 20) {
                                             view.setVisibility(View.INVISIBLE);
