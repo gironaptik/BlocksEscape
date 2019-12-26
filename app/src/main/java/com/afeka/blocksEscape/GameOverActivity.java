@@ -11,13 +11,15 @@ import android.graphics.drawable.ColorDrawable;
 
 public class GameOverActivity extends AppCompatActivity {
 
+    private final String Scores = "scores";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gamover);
         getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         Intent intent = getIntent();
-        String score = intent.getStringExtra("score");
+        String score = intent.getStringExtra(Scores);
         TextView scoreView = findViewById(R.id.score);
         scoreView.setText(score);
         findViewById(R.id.HomePage).setOnClickListener(new Button.OnClickListener() {

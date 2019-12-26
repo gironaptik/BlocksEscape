@@ -21,14 +21,37 @@
             android:background="#D8A736"
             android:text="Let's Play!" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/playButton"
+            android:layout_centerInParent="true"
+            android:layout_margin="20dp">
+            <TextView
+                android:id="@+id/columnText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/playButton"
+                android:layout_centerInParent="true"
+                android:text="How many Columns?"
+                android:textSize="18dp"
+                android:textStyle="bold"/>
+
+            <Spinner
+                android:id="@+id/columnSpinner"
+                android:text="Choose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/columnText"
+                />
+        </LinearLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:text="Created By Giron Aptik &amp; Elad Madar"
-
-            />
+            android:text="Created By Giron Aptik &amp; Elad Madar" />
 
     </RelativeLayout>
 </LinearLayout>

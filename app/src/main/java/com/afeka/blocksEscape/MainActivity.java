@@ -4,20 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.animation.AnimationUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.animation.ObjectAnimator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.graphics.Rect;
 import android.view.animation.LinearInterpolator;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
-import java.lang.Math;
 import android.view.animation.Animation;
 import android.content.Intent;
 import java.util.Random;
@@ -25,50 +26,43 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_1 = 1;
+    LinearLayout parentLinearLayout;
+    ImageView[] bricks;
+    private final String Columns = "columns";
+    private final String Scores = "scores";
     private static int lastDelay = 0;
+    private ImageView builderPlayer;
+    private int NUM_OF_COL;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        int columns =  Integer.parseInt(intent.getStringExtra(Columns));
+        NUM_OF_COL = columns;
+        bricks = new ImageView[columns];
         setContentView(R.layout.activity_main);
-        final ImageView[] playerLocation = {findViewById(R.id.player_left), findViewById(R.id.player_center), findViewById(R.id.player_right)};
-        dropping(playerLocation);
-        movePressed(playerLocation);
+        builderPlayer =  findViewById(R.id.player_center);
+        if (NUM_OF_COL % 2 == 0) {
+            builderPlayer.setX((getResources().getDisplayMetrics().widthPixels / (NUM_OF_COL*2)));
+        }
+        createColumns(columns);
+        dropping(builderPlayer);
+        //movePressed();
     }
 
-    //Move buttons (4 buttons)
-    private void movePressed(final ImageView[] playerLocation){
-
-        findViewById(R.id.buttonLeft).setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controlPlayer(-1, playerLocation);
-            }
-        });
-
-        findViewById(R.id.leftArrow).setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controlPlayer(-1, playerLocation);
-            }
-        });
-
-        findViewById(R.id.buttonRight).setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controlPlayer(1, playerLocation);
-            }
-        });
-
-        findViewById(R.id.rightArrow).setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controlPlayer(1, playerLocation);
-            }
-        });
-
-
+    public void createColumns(int columns){
+        parentLinearLayout = findViewById(R.id.dropsLayout);
+        for (int i=0; i<columns; i++){
+            LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View rowView = inflater.inflate(R.layout.field, parentLinearLayout,  false);
+            ImageView brick = rowView.findViewById(R.id.brick);
+            //brick.setImageResource(R.drawable.d);
+            parentLinearLayout.addView(brick, parentLinearLayout.getChildCount() - 1);
+            bricks[i] = brick;
+        }
     }
 
     //Control player location
@@ -93,6 +87,17 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    private boolean hit(View e,View p) {
+        int[] enemy_locate = new int[2];
+        int[] player_locate = new int[2];
+        // Computes the coordinates of this view on the screen
+        e.getLocationOnScreen(enemy_locate);
+        p.getLocationOnScreen(player_locate);
+        Rect rect1 = new Rect(enemy_locate[0], enemy_locate[1], (int) (enemy_locate[0] + e.getWidth()), (int) (enemy_locate[1] + e.getHeight()));
+        Rect rect2 = new Rect(player_locate[0], player_locate[1], (int) (player_locate[0] + p.getWidth()), (int) (player_locate[1] + p.getHeight()));
+        return Rect.intersects(rect1, rect2);
+    }
+
     //Check life and game over
     private void checkLife(final FrameLayout frame) {
         // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
@@ -115,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         if(i == 0){
                             TextView currentScore = findViewById(R.id.textResults);
                             Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
-                            intent.putExtra("score", currentScore.getText());
+                            intent.putExtra(Scores, currentScore.getText());
                             startActivityForResult(intent, REQUEST_CODE_1);
 
                             LayoutInflater inflater = getLayoutInflater();
@@ -143,8 +148,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Create each brick with its own thread
-    private void dropping(final ImageView[] playerLocation){
-        final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_center), findViewById(R.id.v_right), findViewById(R.id.v_left2), findViewById(R.id.v_center2), findViewById(R.id.v_right2)};
+    private void dropping(final ImageView playerLocation){
+        //final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_center), findViewById(R.id.v_right)};
         //If we want only 3 items
         //final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_center), findViewById(R.id.v_right)};
         for(int i=0; i<bricks.length; i++){
@@ -153,11 +158,10 @@ public class MainActivity extends AppCompatActivity {
             else
                 blocksDropping(bricks[i], playerLocation, 1);
         }
-
     }
 
     //Brick Drop animation and hit calculation
-    private void blocksDropping(final ImageView view, final ImageView[] playerLocation, final int delayIndex) {
+    private void blocksDropping(final ImageView view, final ImageView playerLocation, final int delayIndex) {
         final Handler handler = new Handler();
         new Thread(new Runnable() {
             @Override
@@ -166,9 +170,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         final FrameLayout frame = findViewById(R.id.frameLayout);
-                        final RelativeLayout playerL = findViewById(R.id.playerLayout);
                         final TextView score = findViewById(R.id.textResults);
-                        final ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", frame.getHeight());
+                        final ValueAnimator animation = ValueAnimator.ofInt(0,frame.getHeight() + 400);
                         animation.setInterpolator(new LinearInterpolator());
                         animation.setDuration(4000);
                         if (delayIndex == 0) {
@@ -184,19 +187,18 @@ public class MainActivity extends AppCompatActivity {
                         animation.addUpdateListener(new AnimatorUpdateListener() {
                             @Override
                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                float imageYPosition = (Float)animation.getAnimatedValue();
-                                if(Math.abs(imageYPosition - playerL.getTop()) < 5) {
-                                    for (int i = 0; i < playerLocation.length; i++)
-                                        if (playerLocation[i].getVisibility() == View.VISIBLE && Math.abs(view.getX() - playerLocation[i].getX()) < 20) {
+                                int animatedValue = (int)valueAnimator.getAnimatedValue();
+                                view.setTranslationY(animatedValue);
+                                if(hit(view, builderPlayer)){
                                             view.setVisibility(View.INVISIBLE);
                                             checkLife(frame);
-                                        }
+                                            view.setY(0);
+                                            valueAnimator.start();
                                 }
-                                //}
-
                                 //Updating Score
-                                if(imageYPosition == frame.getHeight()){
+                                if(view.getY() > frame.getHeight()){
                                     score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
+                                    valueAnimator.start();
                                 }
                             }
                         });
@@ -240,6 +242,16 @@ public class MainActivity extends AppCompatActivity {
                 }, 100);
             }
         }).start();
+    }
+
+    public void clickToMoveRight(View view) {
+        if (builderPlayer.getX() + getResources().getDisplayMetrics().widthPixels / NUM_OF_COL < (getResources().getDisplayMetrics().widthPixels ))
+            builderPlayer.setX(builderPlayer.getX() + getResources().getDisplayMetrics().widthPixels / NUM_OF_COL);
+    }
+
+    public void clickToMoveLeft(View view) {
+        if (builderPlayer.getX() >= (getResources().getDisplayMetrics().widthPixels * 1 / NUM_OF_COL))
+            builderPlayer.setX(builderPlayer.getX() - getResources().getDisplayMetrics().widthPixels / NUM_OF_COL);
     }
 
 }

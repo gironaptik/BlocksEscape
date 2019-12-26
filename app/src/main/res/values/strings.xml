@@ -2,4 +2,11 @@
     <string name="app_name">BlocksEscape</string>
     <string name="blocks_escape">Blocks Escape</string>
     <string name="lives">Lives:</string>
+
+    <string-array name="columns_array">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
 </resources>
