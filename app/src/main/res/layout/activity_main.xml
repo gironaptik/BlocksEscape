@@ -98,8 +98,7 @@
                 android:id="@+id/dropsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:fillViewport="true">
+                android:orientation="horizontal">
         </LinearLayout>
 
         <RelativeLayout

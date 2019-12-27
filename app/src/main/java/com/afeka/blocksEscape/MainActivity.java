@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private final String Columns = "columns";
     private final String Scores = "scores";
     private static int lastDelay = 0;
+    private final int[] bricksList = {R.drawable.brick1, R.drawable.brick2, R.drawable.brick3, R.drawable.brick4, R.drawable.brick5, R.drawable.brick6};
     private ImageView builderPlayer;
     private int NUM_OF_COL;
 
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View rowView = inflater.inflate(R.layout.field, parentLinearLayout,  false);
             ImageView brick = rowView.findViewById(R.id.brick);
-            //brick.setImageResource(R.drawable.d);
+            brick.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
             parentLinearLayout.addView(brick, parentLinearLayout.getChildCount() - 1);
             bricks[i] = brick;
         }
@@ -162,18 +163,12 @@ public class MainActivity extends AppCompatActivity {
 
     //Brick Drop animation and hit calculation
     private void blocksDropping(final ImageView view, final ImageView playerLocation, final int delayIndex) {
-        final Handler handler = new Handler();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+
                         final FrameLayout frame = findViewById(R.id.frameLayout);
                         final TextView score = findViewById(R.id.textResults);
-                        final ValueAnimator animation = ValueAnimator.ofInt(0,frame.getHeight() + 400);
+                        final ValueAnimator animation = ValueAnimator.ofInt(0,getResources().getDisplayMetrics().heightPixels);
                         animation.setInterpolator(new LinearInterpolator());
-                        animation.setDuration(4000);
+                        animation.setDuration(2000);
                         if (delayIndex == 0) {
                             int delay = 1000 * ((new Random().nextInt(6)) + 1);
                             lastDelay = delay;
@@ -187,61 +182,67 @@ public class MainActivity extends AppCompatActivity {
                         animation.addUpdateListener(new AnimatorUpdateListener() {
                             @Override
                             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                                view.setVisibility(View.VISIBLE);
                                 int animatedValue = (int)valueAnimator.getAnimatedValue();
                                 view.setTranslationY(animatedValue);
                                 if(hit(view, builderPlayer)){
-                                            view.setVisibility(View.INVISIBLE);
-                                            checkLife(frame);
-                                            view.setY(0);
-                                            valueAnimator.start();
+                                    checkLife(frame);
+                                    view.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
+                                    view.setY(0);
+                                    view.setVisibility(View.INVISIBLE);
+                                    valueAnimator.start();
                                 }
                                 //Updating Score
                                 if(view.getY() > frame.getHeight()){
                                     score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
+                                    view.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
+                                    view.setVisibility(View.INVISIBLE);
                                     valueAnimator.start();
                                 }
                             }
                         });
 
-                        animation.addListener(new Animator.AnimatorListener() {
+//                        animation.addListener(new Animator.AnimatorListener() {
+//
+//                            @Override
+//                            public void onAnimationStart(Animator animation) {
+//                                view.setVisibility(View.VISIBLE);
+//                            }
+//
+//                            @Override
+//                            public void onAnimationEnd(Animator animation) {
+//                                view.setVisibility(View.INVISIBLE);
+//                                if (delayIndex == 1) {
+//                                    int delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
+//                                    while(lastDelay == delay)
+//                                        delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
+//                                    animation.setStartDelay(1000+ delay);
+//                                    lastDelay = delay;
+//                                }
+//                                else {
+//                                    int delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
+//                                    while(lastDelay == delay)
+//                                        delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
+//                                    animation.setStartDelay(1000 + delay);
+//                                    lastDelay = delay;
+//                                }
+//                                animation.start();
+//                                view.setVisibility(View.VISIBLE);
+//
+//                            }
+//
+//                            @Override
+//                            public void onAnimationCancel(Animator animation) {
+//                            }
+//
+//                            @Override
+//                            public void onAnimationRepeat(Animator animation) {
+//                                view.setVisibility(View.VISIBLE);
+//                            }
+//                        });
+                    animation.setRepeatCount(ValueAnimator.INFINITE);
+                    animation.start();
 
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                                view.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                if (delayIndex == 1) {
-                                    int delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
-                                    while(lastDelay == delay)
-                                        delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
-                                    animation.setStartDelay(1000+ delay);
-                                    lastDelay = delay;
-                                }
-                                else {
-                                    int delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
-                                    while(lastDelay == delay)
-                                        delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
-                                    animation.setStartDelay(1000 + delay);
-                                    lastDelay = delay;
-                                }
-                                animation.start();
-                            }
-
-                            @Override
-                            public void onAnimationCancel(Animator animation) {
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animator animation) {
-                            }
-                        });
-                        animation.start();
-                    }
-                }, 100);
-            }
-        }).start();
     }
 
     public void clickToMoveRight(View view) {
