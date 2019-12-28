@@ -26,15 +26,18 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_1 = 1;
-    LinearLayout parentLinearLayout;
-    ImageView[] bricks;
     private final String Columns = "columns";
     private final String Scores = "scores";
+    private final String BonusTag = "Bonus";
+    private final String BrickTag = "Brick";
+    private final int BonusIndex = 6;
     private static int lastDelay = 0;
-    private final int[] bricksList = {R.drawable.brick1, R.drawable.brick2, R.drawable.brick3, R.drawable.brick4, R.drawable.brick5, R.drawable.brick6};
+    private final int[] bricksList = {R.drawable.brick1, R.drawable.brick2, R.drawable.brick3, R.drawable.brick4, R.drawable.brick5, R.drawable.brick6, R.drawable.brick7};
     private ImageView builderPlayer;
     private int NUM_OF_COL;
-
+    FrameLayout frame;
+    LinearLayout parentLinearLayout;
+    ImageView[] bricks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,14 @@ public class MainActivity extends AppCompatActivity {
             LayoutInflater inflater = (LayoutInflater)getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View rowView = inflater.inflate(R.layout.field, parentLinearLayout,  false);
             ImageView brick = rowView.findViewById(R.id.brick);
-            brick.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
+            int randomIndex = new Random().nextInt(bricksList.length);
+            if(randomIndex == BonusIndex){
+                brick.setTag(BonusTag);
+            }
+            else{
+                brick.setTag(BrickTag);
+            }
+            brick.setImageResource(bricksList[randomIndex]);
             parentLinearLayout.addView(brick, parentLinearLayout.getChildCount() - 1);
             bricks[i] = brick;
         }
@@ -118,41 +128,42 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         //GameOver
-                        if(i == 0){
-                            TextView currentScore = findViewById(R.id.textResults);
-                            Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
-                            intent.putExtra(Scores, currentScore.getText());
-                            startActivityForResult(intent, REQUEST_CODE_1);
-
-                            LayoutInflater inflater = getLayoutInflater();
-                            View myView = inflater.inflate(R.layout.activity_gamover, null);
-                            final Button button = myView.findViewById(R.id.HomePage);
-                            button.setOnClickListener(new View.OnClickListener() {
-                                public void onClick(View v) {
-                                    // Perform action on click
-                                    Intent activityChangeIntent = new Intent(MainActivity.this, WelcomeActivity.class);
-                                    MainActivity.this.startActivity(activityChangeIntent);
-                                }
-                            });
-
-                            TextView score = myView.findViewById(R.id.score);
-                            score.setText(currentScore.getText().toString());
-                            Animation animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-                            frame.startAnimation(animShake);
-                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-                            alertDialogBuilder.show();
-                        }
+                        gameOver(i);
                     }
                 });
             }
         }).start();
     }
 
+     public void gameOver(int i){
+         if(i == 0){
+             TextView currentScore = findViewById(R.id.textResults);
+             Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
+             intent.putExtra(Scores, currentScore.getText());
+             startActivityForResult(intent, REQUEST_CODE_1);
+
+             LayoutInflater inflater = getLayoutInflater();
+             View myView = inflater.inflate(R.layout.activity_gamover, null);
+             final Button button = myView.findViewById(R.id.HomePage);
+             button.setOnClickListener(new View.OnClickListener() {
+                 public void onClick(View v) {
+                     // Perform action on click
+                     Intent activityChangeIntent = new Intent(MainActivity.this, WelcomeActivity.class);    ////FIX!!!
+                     MainActivity.this.startActivity(activityChangeIntent);
+                 }
+             });
+
+             TextView score = myView.findViewById(R.id.score);
+             score.setText(currentScore.getText().toString());
+             Animation animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
+             frame.startAnimation(animShake);
+             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+             alertDialogBuilder.show();
+         }
+     }
+
     //Create each brick with its own thread
     private void dropping(final ImageView playerLocation){
-        //final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_center), findViewById(R.id.v_right)};
-        //If we want only 3 items
-        //final ImageView[] bricks = {findViewById(R.id.v_left), findViewById(R.id.v_center), findViewById(R.id.v_right)};
         for(int i=0; i<bricks.length; i++){
             if(i%2 == 0)
                 blocksDropping(bricks[i], playerLocation, 0);
@@ -164,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     //Brick Drop animation and hit calculation
     private void blocksDropping(final ImageView view, final ImageView playerLocation, final int delayIndex) {
 
-                        final FrameLayout frame = findViewById(R.id.frameLayout);
+                        frame = findViewById(R.id.frameLayout);
                         final TextView score = findViewById(R.id.textResults);
                         final ValueAnimator animation = ValueAnimator.ofInt(0,getResources().getDisplayMetrics().heightPixels);
                         animation.setInterpolator(new LinearInterpolator());
@@ -186,16 +197,32 @@ public class MainActivity extends AppCompatActivity {
                                 int animatedValue = (int)valueAnimator.getAnimatedValue();
                                 view.setTranslationY(animatedValue);
                                 if(hit(view, builderPlayer)){
-                                    checkLife(frame);
-                                    view.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
-                                    view.setY(0);
-                                    view.setVisibility(View.INVISIBLE);
-                                    valueAnimator.start();
+                                    if(view.getTag().toString().equals(BonusTag)){
+                                        score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 100));
+                                        view.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
+                                        view.setY(0);
+                                        view.setVisibility(View.INVISIBLE);
+                                        valueAnimator.start();
+                                    }
+                                    else {
+                                        checkLife(frame);
+                                        view.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
+                                        view.setY(0);
+                                        view.setVisibility(View.INVISIBLE);
+                                        valueAnimator.start();
+                                    }
                                 }
                                 //Updating Score
                                 if(view.getY() > frame.getHeight()){
                                     score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
-                                    view.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
+                                    int randomIndex = new Random().nextInt(bricksList.length);
+                                    if(randomIndex == BonusIndex){
+                                        view.setTag(BonusTag);
+                                    }
+                                    else{
+                                        view.setTag(BrickTag);
+                                    }
+                                    view.setImageResource(bricksList[randomIndex]);
                                     view.setVisibility(View.INVISIBLE);
                                     valueAnimator.start();
                                 }
