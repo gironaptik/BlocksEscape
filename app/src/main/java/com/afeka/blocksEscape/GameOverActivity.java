@@ -2,6 +2,7 @@ package com.afeka.blocksEscape;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +12,10 @@ import android.graphics.drawable.ColorDrawable;
 
 public class GameOverActivity extends AppCompatActivity {
 
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String USERNAME = "username";
     private final String Scores = "scores";
+    String playerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,11 @@ public class GameOverActivity extends AppCompatActivity {
                 GameOverActivity.this.startActivity(activityChangeIntent);
             }
         });
+    }
+
+    public void loadData(){
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        playerName = sharedPreferences.getString(USERNAME, "");
     }
 }
 

@@ -1,62 +1,106 @@
 package com.afeka.blocksEscape;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.os.Build;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.animation.AnimationUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.graphics.Rect;
 import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.view.animation.Animation;
 import android.content.Intent;
+
+import com.facebook.stetho.Stetho;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.gson.Gson;
+
 import java.util.Random;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final static int REQUEST_CODE_1 = 1;
-    private final String Columns = "columns";
-    private final String Scores = "scores";
-    private final String BonusTag = "Bonus";
-    private final String BrickTag = "Brick";
+    private static final int REQUEST_CODE_1 = 1;
+    private static final String Columns = "columns";
+    private static final String Player = "player";
+    private static final String Scores = "scores";
+    private static final String BonusTag = "Bonus";
+    private static final String BrickTag = "Brick";
     private final int BonusIndex = 6;
     private static int lastDelay = 0;
     private final int[] bricksList = {R.drawable.brick1, R.drawable.brick2, R.drawable.brick3, R.drawable.brick4, R.drawable.brick5, R.drawable.brick6, R.drawable.brick7};
     private ImageView builderPlayer;
     private int NUM_OF_COL;
+    private String finalScore;
+    private String playername;
+    private FusedLocationProviderClient client;
+    private double lat;
+    private double lng;
+    ValueAnimator animation;
     FrameLayout frame;
     LinearLayout parentLinearLayout;
     ImageView[] bricks;
+    Button settings;
+    ValueAnimator[] animations;
+    Intent intent;
+    DatabaseHelper playersDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
+        setContentView(R.layout.activity_main);
+        playersDb = new DatabaseHelper(this);
+        settings = findViewById(R.id.settings);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onButtonShowPopupWindowClick(view);
+            }
+        });
+
+        requestPermission();
+        getLocation();
+        Stetho.initialize(Stetho.newInitializerBuilder(this).enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
+
+        intent = getIntent();
         int columns =  Integer.parseInt(intent.getStringExtra(Columns));
+        playername = intent.getStringExtra(Player);
         NUM_OF_COL = columns;
         bricks = new ImageView[columns];
-        setContentView(R.layout.activity_main);
         builderPlayer =  findViewById(R.id.player_center);
         if (NUM_OF_COL % 2 == 0) {
             builderPlayer.setX((getResources().getDisplayMetrics().widthPixels / (NUM_OF_COL*2)));
         }
         createColumns(columns);
+        animations = new ValueAnimator[bricks.length];
         dropping(builderPlayer);
         //movePressed();
     }
-
     public void createColumns(int columns){
         parentLinearLayout = findViewById(R.id.dropsLayout);
         for (int i=0; i<columns; i++){
@@ -74,28 +118,6 @@ public class MainActivity extends AppCompatActivity {
             parentLinearLayout.addView(brick, parentLinearLayout.getChildCount() - 1);
             bricks[i] = brick;
         }
-    }
-
-    //Control player location
-    private void controlPlayer(final int direction, final ImageView[] playerLocation) {
-        final Handler handler = new Handler();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        for(int i=0; i<playerLocation.length; i++){
-                            if( (i+direction >= 0  && i+direction <= 2) && playerLocation[i].getVisibility() == View.VISIBLE){
-                                playerLocation[i].setVisibility(View.INVISIBLE);
-                                playerLocation[i+direction].setVisibility(View.VISIBLE);
-                                break;
-                            }
-                        }
-                    }
-                });
-            }
-        }).start();
     }
 
     private boolean hit(View e,View p) {
@@ -140,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
              TextView currentScore = findViewById(R.id.textResults);
              Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
              intent.putExtra(Scores, currentScore.getText());
+             finalScore = currentScore.getText().toString();
              startActivityForResult(intent, REQUEST_CODE_1);
-
              LayoutInflater inflater = getLayoutInflater();
              View myView = inflater.inflate(R.layout.activity_gamover, null);
              final Button button = myView.findViewById(R.id.HomePage);
@@ -152,10 +174,11 @@ public class MainActivity extends AppCompatActivity {
                      MainActivity.this.startActivity(activityChangeIntent);
                  }
              });
-
+             AddData();
              TextView score = myView.findViewById(R.id.score);
              score.setText(currentScore.getText().toString());
              Animation animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
+             stopAnimations();
              frame.startAnimation(animShake);
              AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
              alertDialogBuilder.show();
@@ -166,18 +189,18 @@ public class MainActivity extends AppCompatActivity {
     private void dropping(final ImageView playerLocation){
         for(int i=0; i<bricks.length; i++){
             if(i%2 == 0)
-                blocksDropping(bricks[i], playerLocation, 0);
+                blocksDropping(bricks[i], i, 0);
             else
-                blocksDropping(bricks[i], playerLocation, 1);
+                blocksDropping(bricks[i], i, 1);
         }
     }
 
     //Brick Drop animation and hit calculation
-    private void blocksDropping(final ImageView view, final ImageView playerLocation, final int delayIndex) {
+    private void blocksDropping(final ImageView view, final int i, final int delayIndex) {
 
                         frame = findViewById(R.id.frameLayout);
                         final TextView score = findViewById(R.id.textResults);
-                        final ValueAnimator animation = ValueAnimator.ofInt(0,getResources().getDisplayMetrics().heightPixels);
+                        animation = ValueAnimator.ofInt(0,getResources().getDisplayMetrics().heightPixels);
                         animation.setInterpolator(new LinearInterpolator());
                         animation.setDuration(2000);
                         if (delayIndex == 0) {
@@ -229,46 +252,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-//                        animation.addListener(new Animator.AnimatorListener() {
-//
-//                            @Override
-//                            public void onAnimationStart(Animator animation) {
-//                                view.setVisibility(View.VISIBLE);
-//                            }
-//
-//                            @Override
-//                            public void onAnimationEnd(Animator animation) {
-//                                view.setVisibility(View.INVISIBLE);
-//                                if (delayIndex == 1) {
-//                                    int delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
-//                                    while(lastDelay == delay)
-//                                        delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
-//                                    animation.setStartDelay(1000+ delay);
-//                                    lastDelay = delay;
-//                                }
-//                                else {
-//                                    int delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
-//                                    while(lastDelay == delay)
-//                                        delay = 1000 * (new Random().nextInt((15 - 1) + 1) + 1);
-//                                    animation.setStartDelay(1000 + delay);
-//                                    lastDelay = delay;
-//                                }
-//                                animation.start();
-//                                view.setVisibility(View.VISIBLE);
-//
-//                            }
-//
-//                            @Override
-//                            public void onAnimationCancel(Animator animation) {
-//                            }
-//
-//                            @Override
-//                            public void onAnimationRepeat(Animator animation) {
-//                                view.setVisibility(View.VISIBLE);
-//                            }
-//                        });
                     animation.setRepeatCount(ValueAnimator.INFINITE);
                     animation.start();
+                    animations[i] = animation;
 
     }
 
@@ -282,4 +268,85 @@ public class MainActivity extends AppCompatActivity {
             builderPlayer.setX(builderPlayer.getX() - getResources().getDisplayMetrics().widthPixels / NUM_OF_COL);
     }
 
+    public void stopAnimations(){
+        for (int i = 0; i < animations.length; i++){
+            animations[i].pause();
+        }
+    }
+
+    public void resumeAnimations(){
+        for (int i = 0; i < animations.length; i++){
+            animations[i].resume();
+        }
+    }
+    public void onButtonShowPopupWindowClick(View view) {
+
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.settings, null);
+
+        // create the popup window
+        int width = (int)(getResources().getDisplayMetrics().widthPixels/1.5);
+        int height = (int)(getResources().getDisplayMetrics().heightPixels/3);
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+        stopAnimations();
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //popupWindow.dismiss();
+                //resumeAnimations();
+                return true;
+            }
+        });
+
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                resumeAnimations();
+            }
+        });
+    }
+
+//    public void saveData(){
+//        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+//        SharedPreferences.Editor editor =  sharedPreferences.edit();
+//        //intent.getStringExtra(Player);
+//        String jsonMyObject = null;
+//        Bundle extras = intent.getExtras();
+//        if (extras != null) {
+//            jsonMyObject = extras.getString("myObject");
+//        }
+//        player = new Gson().fromJson(jsonMyObject, Player.class);
+//        editor.putString(USERNAME, player.getName());
+//    }
+
+    public  void AddData() {
+//        String name, String score, String lat, String lng
+        boolean isInserted = playersDb.insertData(playername,
+                finalScore,
+                String.valueOf(lat), String.valueOf(lng));
+    }
+
+    public void getLocation(){
+        client = LocationServices.getFusedLocationProviderClient(this);
+        client.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if(location != null){
+                    lat = location.getLatitude();
+                    lng = location.getLongitude();
+                }
+            }
+        });
+    }
+
+    public void requestPermission(){
+        ActivityCompat.requestPermissions(this,new String[] {ACCESS_FINE_LOCATION}, 1);
+    }
 }

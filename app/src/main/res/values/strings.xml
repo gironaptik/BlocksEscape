@@ -2,6 +2,8 @@
     <string name="app_name">BlocksEscape</string>
     <string name="blocks_escape">Blocks Escape</string>
     <string name="lives">Lives:</string>
+    <string name="sensors">Sensors</string>
+    <string name="sound">Sound</string>
 
     <string-array name="columns_array">
         <item>3</item>
