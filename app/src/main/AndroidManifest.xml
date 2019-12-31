@@ -13,14 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCDBJNU3zwheuVx_JtuYJ3aNu12Aizk3qE"/>
-        <activity android:name=".GameOverActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Dialog.Alert"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".WelcomeActivity">
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <activity android:name=".GameOverActivity"></activity>
+        <activity android:name=".WelcomeActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

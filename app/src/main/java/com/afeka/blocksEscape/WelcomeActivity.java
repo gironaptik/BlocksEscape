@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.content.Intent;
 import android.widget.AdapterView;
@@ -32,7 +33,8 @@ public class WelcomeActivity extends AppCompatActivity implements AdapterView.On
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        nameOfPlayer = findViewById(R.id.usernameField);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        nameOfPlayer = findViewById(R.id.usernameEdit);
         Gson gson = new Gson();
 //        player = new Player(" ",0,0, 0);
 //        String json = gson.toJson(player);
@@ -60,7 +62,6 @@ public class WelcomeActivity extends AppCompatActivity implements AdapterView.On
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                nameOfPlayer.setHint("");
                 return false;
             }
         });

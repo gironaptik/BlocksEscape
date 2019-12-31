@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ScoresFragment"
+    android:background="@drawable/gameovercopy">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+        <TextView
+            android:id="@+id/currentPlayerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="15sp"/>
+    <TextView
+        android:id="@+id/currentPlayerScoreTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/player_score"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        />
+
+    <TextView
+        android:id="@+id/currentPlayerScoreValue"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text=""
+        android:textStyle="bold"
+        android:textSize="15sp"
+        />
+        </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="(Click on the players name to see their Location)"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="TOP 5 Scores!"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:textSize="32sp"/>
+
+    <TableLayout
+        android:id="@+id/scoresTable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#90FFFFFF"></TableLayout>
+    <TextView
+        android:id="@+id/ScoreTable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""/>
+
+
+</LinearLayout>

@@ -71,16 +71,20 @@
                 android:textSize="18dp"
                 android:textStyle="bold"/>
 
+
+
             <EditText
-                android:id="@+id/usernameField"
+                android:id="@+id/usernameEdit"
                 android:hint="Enter your name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 />
 
-        </LinearLayout>
 
+        </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

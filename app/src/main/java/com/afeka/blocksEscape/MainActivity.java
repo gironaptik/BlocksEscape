@@ -68,12 +68,16 @@ public class MainActivity extends AppCompatActivity {
     Intent intent;
     DatabaseHelper playersDb;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         playersDb = new DatabaseHelper(this);
+
         settings = findViewById(R.id.settings);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,11 +88,12 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
         getLocation();
+
         Stetho.initialize(Stetho.newInitializerBuilder(this).enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
                 .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
 
         intent = getIntent();
-        int columns =  Integer.parseInt(intent.getStringExtra(Columns));
+        int columns =  Integer.parseInt(intent.getStringExtra(Columns));        /// CHECK IF NULL
         playername = intent.getStringExtra(Player);
         NUM_OF_COL = columns;
         bricks = new ImageView[columns];
@@ -160,28 +165,34 @@ public class MainActivity extends AppCompatActivity {
      public void gameOver(int i){
          if(i == 0){
              TextView currentScore = findViewById(R.id.textResults);
-             Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
-             intent.putExtra(Scores, currentScore.getText());
+//             Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
+//             intent.putExtra(Scores, currentScore.getText());
              finalScore = currentScore.getText().toString();
-             startActivityForResult(intent, REQUEST_CODE_1);
-             LayoutInflater inflater = getLayoutInflater();
-             View myView = inflater.inflate(R.layout.activity_gamover, null);
-             final Button button = myView.findViewById(R.id.HomePage);
-             button.setOnClickListener(new View.OnClickListener() {
-                 public void onClick(View v) {
-                     // Perform action on click
-                     Intent activityChangeIntent = new Intent(MainActivity.this, WelcomeActivity.class);    ////FIX!!!
-                     MainActivity.this.startActivity(activityChangeIntent);
-                 }
-             });
+             Intent activityChangeIntent = new Intent(MainActivity.this, GameOverActivity.class);
+             activityChangeIntent.putExtra(Scores, finalScore);
+             activityChangeIntent.putExtra(Player, playername);
+             MainActivity.this.startActivity(activityChangeIntent);
+//             startActivityForResult(intent, REQUEST_CODE_1);
+//             LayoutInflater inflater = getLayoutInflater();
+//             View myView = inflater.inflate(R.layout.activity_gamover, null);
+//             final Button button = myView.findViewById(R.id.HomePage);
+//             button.setOnClickListener(new View.OnClickListener() {
+//                 public void onClick(View v) {
+//                     // Perform action on click
+//                     Intent activityChangeIntent = new Intent(MainActivity.this, WelcomeActivity.class);    ////FIX!!!
+//                     MainActivity.this.startActivity(activityChangeIntent);
+//                 }
+//             });
+
              AddData();
-             TextView score = myView.findViewById(R.id.score);
-             score.setText(currentScore.getText().toString());
+//             TextView score = myView.findViewById(R.id.score);
+//             score.setText(currentScore.getText().toString());
              Animation animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
              stopAnimations();
              frame.startAnimation(animShake);
              AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
              alertDialogBuilder.show();
+             finish();
          }
      }
 
@@ -313,22 +324,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    public void saveData(){
-//        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-//        SharedPreferences.Editor editor =  sharedPreferences.edit();
-//        //intent.getStringExtra(Player);
-//        String jsonMyObject = null;
-//        Bundle extras = intent.getExtras();
-//        if (extras != null) {
-//            jsonMyObject = extras.getString("myObject");
-//        }
-//        player = new Gson().fromJson(jsonMyObject, Player.class);
-//        editor.putString(USERNAME, player.getName());
-//    }
 
     public  void AddData() {
-//        String name, String score, String lat, String lng
-        boolean isInserted = playersDb.insertData(playername,
+        playersDb.insertData(playername,
                 finalScore,
                 String.valueOf(lat), String.valueOf(lng));
     }
