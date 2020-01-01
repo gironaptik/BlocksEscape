@@ -142,13 +142,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkLife(final FrameLayout frame) {
         // This 'handler' is created in the Main Thread, therefore it has a connection to the Main Thread.
         final ImageView[] lives = {findViewById(R.id.live1), findViewById(R.id.live2), findViewById(R.id.live3)};
-        final Handler handler = new Handler();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
+
                         int i;
                         for(i=lives.length-1; i>=0; i--){
                             if( (lives[i].getVisibility() == View.VISIBLE)){
@@ -158,45 +152,22 @@ public class MainActivity extends AppCompatActivity {
                         }
                         //GameOver
                         gameOver(i);
-                    }
-                });
-            }
-        }).start();
+
     }
 
      public void gameOver(int i){
          if(i == 0){
              TextView currentScore = findViewById(R.id.textResults);
-//             Intent intent = new Intent(MainActivity.this, GameOverActivity.class);
-//             intent.putExtra(Scores, currentScore.getText());
              finalScore = currentScore.getText().toString();
-             Intent activityChangeIntent = new Intent(MainActivity.this, GameOverActivity.class);
+             Intent activityChangeIntent = new Intent(this, GameOverActivity.class);
              activityChangeIntent.putExtra(Scores, finalScore);
              activityChangeIntent.putExtra(Player, playername);
              activityChangeIntent.putExtra(Lat, String.valueOf(lat));
              activityChangeIntent.putExtra(Lng, String.valueOf(lng));
-             MainActivity.this.startActivity(activityChangeIntent);
-//             startActivityForResult(intent, REQUEST_CODE_1);
-//             LayoutInflater inflater = getLayoutInflater();
-//             View myView = inflater.inflate(R.layout.activity_gamover, null);
-//             final Button button = myView.findViewById(R.id.HomePage);
-//             button.setOnClickListener(new View.OnClickListener() {
-//                 public void onClick(View v) {
-//                     // Perform action on click
-//                     Intent activityChangeIntent = new Intent(MainActivity.this, WelcomeActivity.class);    ////FIX!!!
-//                     MainActivity.this.startActivity(activityChangeIntent);
-//                 }
-//             });
-
+             startActivity(activityChangeIntent);
              AddData();
-//             TextView score = myView.findViewById(R.id.score);
-//             score.setText(currentScore.getText().toString());
-             Animation animShake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-             stopAnimations();
-             frame.startAnimation(animShake);
-             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-             alertDialogBuilder.show();
              finish();
+             return;
          }
      }
 
@@ -350,5 +321,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void requestPermission(){
         ActivityCompat.requestPermissions(this,new String[] {ACCESS_FINE_LOCATION}, 1);
+    }
+
+    @Override
+    public void onBackPressed() {
+        stopAnimations();
+        startActivity(new Intent(this, WelcomeActivity.class));
+        finish();
+        return;
     }
 }

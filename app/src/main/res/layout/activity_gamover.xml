@@ -9,7 +9,7 @@
         android:name="com.afeka.blocksEscape.ScoresFragment"
         android:id="@+id/fragment_scores"
         android:layout_width="match_parent"
-        android:layout_height="350dp"/>
+        android:layout_height="380dp"/>
 
     <fragment
         android:name="com.afeka.blocksEscape.LocationFragment"

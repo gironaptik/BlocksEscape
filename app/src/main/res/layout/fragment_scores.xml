@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:text="TOP 5 SCORES"
         android:textColor="#D45C34"
 
@@ -67,6 +67,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|end"
+        android:layout_centerInParent="true"
+        >
+
+
+    <Button
+        android:id="@+id/resetGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FF9800"
+        android:text="Let's try Again" />
+    </LinearLayout>
 
 
 </LinearLayout>

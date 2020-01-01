@@ -63,22 +63,6 @@ public class LocationFragment extends Fragment implements OnMapReadyCallback {
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(newLocation));
     }
 
-//    public void newLocation(float newLat, float newLng){
-//        lat = newLat;
-//        lng = newLng;
-//        mapView = (MapView) mView.findViewById(R.id.map);
-//        mapView.getMapAsync(new OnMapReadyCallback() {
-//            @Override
-//            public void onMapReady(GoogleMap googleMap) {
-//                MapsInitializer.initialize(getContext());
-//                mGooglemap = googleMap;
-//                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-//                googleMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)));
-//                CameraPosition newLocation = CameraPosition.builder().target(new LatLng(lat, lng)).zoom(16).bearing(0).tilt(45).build();
-//                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(newLocation));
-//            }
-//        });
-//    }
 
     public void placeMarker(String title, float lat, float lon) {
         mGooglemap.clear();
