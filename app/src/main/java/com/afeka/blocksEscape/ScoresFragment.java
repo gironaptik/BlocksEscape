@@ -1,17 +1,30 @@
 package com.afeka.blocksEscape;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import java.util.Collections;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,9 +35,16 @@ public class ScoresFragment extends Fragment {
     private final static int top = 5;
     private final String Scores = "scores";
     private static final String Player = "player";
+    private static final String Lat = "lat";
+    private static final String Lng = "lng";
     private String finalScore;
     private String playerName;
     private ArrayList<Player> playerList;
+    private LocationFragment locationFragment;
+    String lat;
+    String lng;
+    Player currentPlayer;
+    GoogleMap googleMap;
     TextView currentPlayerScoreValue;
     TextView currentPlayerPlayed;
     Intent intent;
@@ -35,15 +55,27 @@ public class ScoresFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        checkPermission();
         intent = getActivity().getIntent();
         finalScore = intent.getStringExtra(Scores);
         playerName = intent.getStringExtra(Player);
+        lat = intent.getStringExtra(Lat);
+        lng = intent.getStringExtra(Lng);
         playersDb = new DatabaseHelper(getActivity());
+        locationFragment = new LocationFragment();
+        FragmentManager fm = getFragmentManager();
+        fm.beginTransaction().replace(R.id.map, locationFragment).commit();
         //viewAll();
         View view = inflater.inflate(R.layout.fragment_scores, container, false);
         scoreTable = view.findViewById(R.id.scoresTable);
         currentPlayerScoreValue = view.findViewById(R.id.currentPlayerScoreValue);
         currentPlayerPlayed = view.findViewById(R.id.currentPlayerName);
+        currentPlayerPlayed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                placeMarkerInMap(playerName + " Location", Float.valueOf(lng), Float.valueOf(lat));
+            }
+        });
         currentPlayerScoreValue.setText(finalScore);
         currentPlayerPlayed.setText(playerName);
         viewAll();
@@ -74,20 +106,27 @@ public class ScoresFragment extends Fragment {
 
 
         public void createTable(){
+            TableRow.LayoutParams lp =
+                    new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(20,20,20,20);
             final TableRow firsTableRow = new TableRow(getActivity());
             firsTableRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
             final TextView nameTitle = new TextView(getActivity());
+            nameTitle.setTypeface(null, Typeface.BOLD);
             nameTitle.setText("Name");
-            nameTitle.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            nameTitle.setLayoutParams(lp);
             final TextView scoreTitle = new TextView(getActivity());
+            scoreTitle.setTypeface(null, Typeface.BOLD);
             scoreTitle.setText("Score");
-            scoreTitle.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            scoreTitle.setLayoutParams(lp);
             final TextView latTitle = new TextView(getActivity());
+            latTitle.setTypeface(null, Typeface.BOLD);
             latTitle.setText("Lat");
-            latTitle.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            latTitle.setLayoutParams(lp);
             final TextView lngTitle = new TextView(getActivity());
+            lngTitle.setTypeface(null, Typeface.BOLD);
             lngTitle.setText("Lng");
-            lngTitle.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+            lngTitle.setLayoutParams(lp);
 
             firsTableRow.addView(nameTitle);
             firsTableRow.addView(scoreTitle);
@@ -97,21 +136,31 @@ public class ScoresFragment extends Fragment {
 
             int tableSize = top > playerList.size() ? playerList.size() : top;
             for(int i=0; i<tableSize; i++){
+                currentPlayer = playerList.get(i);
                 final TableRow tableRow = new TableRow(getActivity());
                 tableRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
                 final TextView name = new TextView(getActivity());
+                name.setLayoutParams(lp);
+                name.setTypeface(null, Typeface.BOLD);
                 name.setText(playerList.get(i).getName());
-                name.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+
                 final TextView score = new TextView(getActivity());
+                score.setLayoutParams(lp);
                 score.setText(String.valueOf(playerList.get(i).getScore()));
-                score.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
                 final TextView lat = new TextView(getActivity());
+                lat.setLayoutParams(lp);
                 lat.setText(String.valueOf(playerList.get(i).getLat()));
-                lat.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
                 final TextView lng = new TextView(getActivity());
                 lng.setText(String.valueOf(playerList.get(i).getLng()));
-                lng.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                lng.setLayoutParams(lp);
 
+                name.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //locationFragment.getLocatoinByMarker(googleMap, currentPlayer.getLat(), currentPlayer.getLng());
+                        placeMarkerInMap(name.getText() + " Location", Float.parseFloat(lat.getText().toString()), Float.parseFloat(lng.getText().toString()));
+                    }
+                });
                 tableRow.addView(name);
                 tableRow.addView(score);
                 tableRow.addView(lat);
@@ -120,6 +169,23 @@ public class ScoresFragment extends Fragment {
                 scoreTable.addView(tableRow);
 
             }
+
         }
+    private void placeMarkerInMap(String title, float lat, float lng) {
+        if (locationFragment != null) {
+            locationFragment.placeMarker(title, lng, lat);
+        }
+    }
+
+    public void checkPermission(){
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ){//Can add more as per requirement
+
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
+                    123);
+        }
+    }
 
 }

@@ -43,14 +43,18 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="(Click on the players name to see their Location)"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="TOP 5 Scores!"
         android:layout_marginTop="10dp"
-        android:textStyle="bold"
-        android:textSize="32sp"/>
+        android:layout_marginBottom="20dp"
+        android:text="TOP 5 SCORES"
+        android:textColor="#D45C34"
+
+        android:textSize="32sp"
+        android:textStyle="bold" />
 
     <TableLayout
         android:id="@+id/scoresTable"

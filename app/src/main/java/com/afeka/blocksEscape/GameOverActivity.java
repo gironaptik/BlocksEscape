@@ -16,6 +16,8 @@ import android.graphics.drawable.ColorDrawable;
 public class GameOverActivity extends AppCompatActivity {
 
     private final String Scores = "scores";
+    private static final String Lat = "lat";
+    private static final String Lng = "lng";
     FragmentManager scoresFragment;
 
     @Override
@@ -23,35 +25,15 @@ public class GameOverActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gamover);
-//        getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         Intent intent = getIntent();
         String score = intent.getStringExtra(Scores);
+        String lat = intent.getStringExtra(Lat);
+        String lng = intent.getStringExtra(Lng);
         Intent scoreIntent = new Intent(GameOverActivity.this, ScoresFragment.class);
         scoreIntent.putExtra(Scores, score);
-        //scoreIntent.putExtra(Player, playername);
-//        TextView scoreView = findViewById(R.id.score);
-//        scoreView.setText(score);
-//        findViewById(R.id.HomePage).setOnClickListener(new Button.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent parentActivityIntent = new Intent(GameOverActivity.this, WelcomeActivity.class);
-//                parentActivityIntent.addFlags(
-//                        Intent.FLAG_ACTIVITY_CLEAR_TOP |
-//                                Intent.FLAG_ACTIVITY_NEW_TASK);
-//                startActivity(parentActivityIntent);
-//                finish();
-//                //Intent activityChangeIntent = new Intent(GameOverActivity.this, WelcomeActivity.class);
-//                //GameOverActivity.this.startActivity(activityChangeIntent);
-//            }
-//        });
-//
-//        findViewById(R.id.resetGame).setOnClickListener(new Button.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent activityChangeIntent = new Intent(GameOverActivity.this, MainActivity.class);
-//                GameOverActivity.this.startActivity(activityChangeIntent);
-//            }
-//        });
+        scoreIntent.putExtra(Lat, lat);
+        scoreIntent.putExtra(Lng, lng);
+
     }
 
 }

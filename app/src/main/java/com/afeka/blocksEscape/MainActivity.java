@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String Scores = "scores";
     private static final String BonusTag = "Bonus";
     private static final String BrickTag = "Brick";
+    private static final String Lat = "lat";
+    private static final String Lng = "lng";
     private final int BonusIndex = 6;
     private static int lastDelay = 0;
     private final int[] bricksList = {R.drawable.brick1, R.drawable.brick2, R.drawable.brick3, R.drawable.brick4, R.drawable.brick5, R.drawable.brick6, R.drawable.brick7};
@@ -171,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
              Intent activityChangeIntent = new Intent(MainActivity.this, GameOverActivity.class);
              activityChangeIntent.putExtra(Scores, finalScore);
              activityChangeIntent.putExtra(Player, playername);
+             activityChangeIntent.putExtra(Lat, String.valueOf(lat));
+             activityChangeIntent.putExtra(Lng, String.valueOf(lng));
              MainActivity.this.startActivity(activityChangeIntent);
 //             startActivityForResult(intent, REQUEST_CODE_1);
 //             LayoutInflater inflater = getLayoutInflater();
