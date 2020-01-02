@@ -27,7 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/soundText"
-        android:layout_alignRight="@id/SensorSwitch"
+        android:layout_alignRight="@id/sensorSwitch"
+        android:textOff="OFF"
+        android:textOn="ON"
+        android:checked="true"
         />
 
     <TextView
@@ -41,13 +44,16 @@
         />
 
     <Switch
-        android:id="@+id/SensorSwitch"
+        android:id="@+id/sensorSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/sensorText"
         android:layout_below="@id/soundSwitch"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="10dp"
+        android:textOff="OFF"
+        android:textOn="ON"
+        android:checked="true"
         />
 
     </RelativeLayout>

@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,6 +27,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.view.animation.Animation;
@@ -43,7 +45,6 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE_1 = 1;
     private static final String Columns = "columns";
     private static final String Player = "player";
     private static final String Scores = "scores";
@@ -61,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient client;
     private double lat;
     private double lng;
+    private Switch sensorSwitch;
+    //private Switch soundSwitch;
+//    private Accelerometer accelerometer;
+    private Gyroscope gyroscope;
     ValueAnimator animation;
     FrameLayout frame;
     LinearLayout parentLinearLayout;
@@ -76,10 +81,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         playersDb = new DatabaseHelper(this);
-
         settings = findViewById(R.id.settings);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +89,10 @@ public class MainActivity extends AppCompatActivity {
                 onButtonShowPopupWindowClick(view);
             }
         });
-
+        //sensorSwitch = findViewById(R.id.sensorSwitch);
+//        accelerometer = new Accelerometer(this);
+        gyroscope = new Gyroscope(this);
+        motionListener();
         requestPermission();
         getLocation();
 
@@ -108,6 +113,49 @@ public class MainActivity extends AppCompatActivity {
         dropping(builderPlayer);
         //movePressed();
     }
+
+    private void motionListener() {
+//        accelerometer.setListener(new Accelerometer.Listener() {
+//            @Override
+//            public void onTranslation(float tx, float ty, float tz) {
+//                if(tx > 1.0f){
+//
+//                }
+//                else if (tx < -1.0f){
+//
+//                }
+//            }
+//        });
+
+        gyroscope.setListener(new Gyroscope.Listener() {
+            @Override
+            public void onRotation(float rx, float ry, float rz) {      // Rotate left
+                if(rz > 3.0f && (rx < 2.0f || rx < -2.0f)){
+                    clickToMoveLeft(builderPlayer);
+
+                }
+                else if (rz < -3.0f && (rx < 2.0f || rx < -2.0f)){        //Rotate right
+                    clickToMoveRight(builderPlayer);
+
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //accelerometer.register();
+        gyroscope.register();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //accelerometer.unregister();
+        gyroscope.unregister();
+    }
+
     public void createColumns(int columns){
         parentLinearLayout = findViewById(R.id.dropsLayout);
         for (int i=0; i<columns; i++){
@@ -208,7 +256,14 @@ public class MainActivity extends AppCompatActivity {
                                 if(hit(view, builderPlayer)){
                                     if(view.getTag().toString().equals(BonusTag)){
                                         score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 100));
-                                        view.setImageResource(bricksList[new Random().nextInt(bricksList.length)]);
+                                        int randomIndex = new Random().nextInt(bricksList.length);
+                                        view.setImageResource(bricksList[randomIndex]);
+                                        if(randomIndex == BonusIndex){
+                                            view.setTag(BonusTag);
+                                        }
+                                        else{
+                                            view.setTag(BrickTag);
+                                        }
                                         view.setY(0);
                                         view.setVisibility(View.INVISIBLE);
                                         valueAnimator.start();
@@ -271,7 +326,6 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.settings, null);
-
         // create the popup window
         int width = (int)(getResources().getDisplayMetrics().widthPixels/1.5);
         int height = (int)(getResources().getDisplayMetrics().heightPixels/3);
@@ -297,6 +351,8 @@ public class MainActivity extends AppCompatActivity {
                 resumeAnimations();
             }
         });
+        sensorSwitch = popupView.findViewById(R.id.sensorSwitch);
+        sensorSwitch.setOnCheckedChangeListener(switchListener);
     }
 
 
@@ -328,6 +384,36 @@ public class MainActivity extends AppCompatActivity {
         stopAnimations();
         startActivity(new Intent(this, WelcomeActivity.class));
         finish();
+        overridePendingTransition(0, 0);
         return;
     }
+
+//    public void switchListener(){
+//        new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//                sensorSwitch.setChecked(b);
+//                if(b){
+//                    gyroscope.unregister();
+//                }
+//                else if(!b){
+//                    gyroscope.register();
+//                }
+//            }
+//        };
+//    }
+
+    private Switch.OnCheckedChangeListener switchListener =
+            new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            if(b){
+                gyroscope.unregister();
+            }
+            else if(!b){
+                gyroscope.register();
+            }
+        }
+    };
+    //sensorSwitch.setChecked(sensorSwitch.isChecked());
 }
