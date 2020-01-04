@@ -12,8 +12,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Blocks Escape"
         android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:supportsRtl="false"
+        android:theme="@style/AppTheme"
+        >
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCDBJNU3zwheuVx_JtuYJ3aNu12Aizk3qE"/>
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
         <activity android:name=".GameOverActivity"

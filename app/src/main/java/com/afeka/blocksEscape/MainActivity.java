@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private double lat;
     private double lng;
     private Switch sensorSwitch;
+    private boolean sensorValue = true;
     //private Switch soundSwitch;
 //    private Accelerometer accelerometer;
     private Gyroscope gyroscope;
@@ -325,22 +326,17 @@ public class MainActivity extends AppCompatActivity {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.settings, null);
-        // create the popup window
+        View popupView = inflater.inflate(R.layout.settings, parentLinearLayout, false);
         int width = (int)(getResources().getDisplayMetrics().widthPixels/1.5);
         int height = (int)(getResources().getDisplayMetrics().heightPixels/3);
         boolean focusable = true; // lets taps outside the popup also dismiss it
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
         stopAnimations();
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-        // dismiss the popup window when touched
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                //popupWindow.dismiss();
-                //resumeAnimations();
+
                 return true;
             }
         });
@@ -352,7 +348,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         sensorSwitch = popupView.findViewById(R.id.sensorSwitch);
-        sensorSwitch.setOnCheckedChangeListener(switchListener);
+        sensorSwitchChanged();
+
     }
 
 
@@ -388,32 +385,23 @@ public class MainActivity extends AppCompatActivity {
         return;
     }
 
-//    public void switchListener(){
-//        new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                sensorSwitch.setChecked(b);
-//                if(b){
-//                    gyroscope.unregister();
-//                }
-//                else if(!b){
-//                    gyroscope.register();
-//                }
-//            }
-//        };
-//    }
 
-    private Switch.OnCheckedChangeListener switchListener =
-            new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-            if(b){
+public void sensorSwitchChanged() {
+    sensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (!isChecked) {
+                sensorValue = false;
                 gyroscope.unregister();
-            }
-            else if(!b){
+                buttonView.setChecked(false);
+            } else {
+                sensorValue = true;
                 gyroscope.register();
+                buttonView.setChecked(true);
+//            }
             }
         }
-    };
-    //sensorSwitch.setChecked(sensorSwitch.isChecked());
+
+    });
+    sensorSwitch.setChecked(sensorValue);
+}
 }
