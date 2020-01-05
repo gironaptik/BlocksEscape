@@ -15,17 +15,16 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Blocks Escape"
         android:roundIcon="@mipmap/ic_launcher"
+        android:screenOrientation="portrait"
+        android:noHistory="false"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
         >
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCDBJNU3zwheuVx_JtuYJ3aNu12Aizk3qE"/>
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
         <activity android:name=".GameOverActivity"
-            android:noHistory="true"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".WelcomeActivity"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -34,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"></activity>
+            ></activity>
     </application>
 
 </manifest>

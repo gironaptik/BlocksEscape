@@ -6,6 +6,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -257,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
         animation.setRepeatCount(ValueAnimator.INFINITE);
         animation.start();
         animations[i] = animation;
@@ -407,13 +410,16 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         gyroscope.register();
         loginSong.start();
+        resumeAnimations();
     }
 
     @Override
     protected void onPause() {
+
         super.onPause();
         gyroscope.unregister();
         loginSong.pause();
+        stopAnimations();
     }
 
     @Override
