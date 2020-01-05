@@ -32,8 +32,8 @@ import android.widget.Button;
 
 public class ScoresFragment extends Fragment {
 
-    private final static int top = 5;
-    private final String Scores = "scores";
+    private static final int top = 5;
+    private static final String Scores = "scores";
     private static final String Player = "player";
     private static final String Lat = "lat";
     private static final String Lng = "lng";
@@ -41,16 +41,17 @@ public class ScoresFragment extends Fragment {
     private String playerName;
     private ArrayList<Player> playerList;
     private LocationFragment locationFragment;
-    Button newGame;
-    String lat;
-    String lng;
+    private Button newGame;
+    private String lat;
+    private String lng;
+    private GoogleMap googleMap;
+    private TextView currentPlayerScoreValue;
+    private TextView currentPlayerPlayed;
+    private Intent intent;
+    private TableLayout scoreTable;
+    private DatabaseHelper playersDb;
     Player currentPlayer;
-    GoogleMap googleMap;
-    TextView currentPlayerScoreValue;
-    TextView currentPlayerPlayed;
-    Intent intent;
-    TableLayout scoreTable;
-    DatabaseHelper playersDb;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -140,16 +141,16 @@ public class ScoresFragment extends Fragment {
             score.setText(String.valueOf(playerList.get(i).getScore()));
             final TextView lat = new TextView(getActivity());
             lat.setLayoutParams(lp);
-            lat.setText(String.valueOf(playerList.get(i).getLat()));
+            lat.setText(String.valueOf(playerList.get(i).getLng()));
             final TextView lng = new TextView(getActivity());
-            lng.setText(String.valueOf(playerList.get(i).getLng()));
+            lng.setText(String.valueOf(playerList.get(i).getLat()));
             lng.setLayoutParams(lp);
 
             name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //locationFragment.getLocatoinByMarker(googleMap, currentPlayer.getLat(), currentPlayer.getLng());
-                    placeMarkerInMap(name.getText() + " Location", Float.parseFloat(lat.getText().toString()), Float.parseFloat(lng.getText().toString()));
+                    placeMarkerInMap(name.getText() + " Location", Float.parseFloat(lng.getText().toString()), Float.parseFloat(lat.getText().toString()));
                 }
             });
             tableRow.addView(name);

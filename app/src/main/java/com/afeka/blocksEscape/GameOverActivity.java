@@ -18,7 +18,6 @@ public class GameOverActivity extends AppCompatActivity {
     private final String Scores = "scores";
     private static final String Lat = "lat";
     private static final String Lng = "lng";
-    FragmentManager scoresFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

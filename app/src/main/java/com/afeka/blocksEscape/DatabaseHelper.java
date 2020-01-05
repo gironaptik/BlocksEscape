@@ -22,17 +22,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME +" (ID INTEGER PRIMARY KEY AUTOINCREMENT,NAME TEXT,SCORE TEXT,LAT INTEGER, LNG INTEGER)");
+        db.execSQL("create table " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT,NAME TEXT,SCORE TEXT,LAT INTEGER, LNG INTEGER)");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
-        onCreate(db );
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
     }
 
-    public boolean insertData(String name, String score, String lat, String lng){
+    public boolean insertData(String name, String score, String lat, String lng) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2, name);
@@ -40,17 +40,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_4, lat);
         contentValues.put(COL_5, lng);
         long result = db.insert(TABLE_NAME, null, contentValues);
-        if(result == -1){
+        if (result == -1) {
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
 
-    public Cursor getAllData(){
+    public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+ TABLE_NAME, null);
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);
         return res;
     }
 
