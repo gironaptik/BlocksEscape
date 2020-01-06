@@ -4,16 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.MediaPlayer;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -32,16 +28,12 @@ import android.widget.TextView;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Intent;
 import android.widget.Toast;
-
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-
-import java.util.Locale;
 import java.util.Random;
 
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private Switch soundSwitch;
     private boolean sensorValue = true;
     private boolean soundValue = true;
+    private boolean popUpStatus = false;
     private View rowView;
     private Gyroscope gyroscope;
     private ValueAnimator animation;
@@ -303,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
+                popUpStatus = true;
                 return true;
             }
         });
@@ -311,6 +304,7 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
+                popUpStatus = false;
                 resumeAnimations();
             }
         });
@@ -409,8 +403,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         gyroscope.register();
-        loginSong.start();
-        resumeAnimations();
+        if (!soundValue) {
+            loginSong.pause();
+        }
+        else{
+            loginSong.start();
+        }
+        if(popUpStatus) {
+            resumeAnimations();
+        }
     }
 
     @Override

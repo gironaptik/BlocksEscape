@@ -116,6 +116,11 @@ public class WelcomeActivity extends AppCompatActivity implements AdapterView.On
     @Override
     protected void onResume() {
         super.onResume();
-        loginSong.start();
+        if (soundController.getTag().toString().equals(Off)) {
+            loginSong.pause();
+        }
+        else{
+            loginSong.start();
+        }
     }
 }
