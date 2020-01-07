@@ -1,32 +1,25 @@
 package com.afeka.blocksEscape;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
 import java.util.Collections;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.GoogleMap;
-
 import java.util.ArrayList;
 import java.util.Comparator;
-
 import android.widget.Button;
 
 
@@ -149,7 +142,6 @@ public class ScoresFragment extends Fragment {
             name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //locationFragment.getLocatoinByMarker(googleMap, currentPlayer.getLat(), currentPlayer.getLng());
                     placeMarkerInMap(name.getText() + " Location", Float.parseFloat(lng.getText().toString()), Float.parseFloat(lat.getText().toString()));
                 }
             });
